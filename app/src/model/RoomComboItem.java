@@ -13,6 +13,10 @@ public class RoomComboItem {
         return id;
     }
 
+    public String getRoomType() {
+        return typeName;
+    }
+
     @Override
     public String toString() {
         return typeName;  // Only show type name in JComboBox

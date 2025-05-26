@@ -81,19 +81,27 @@ public class AdminDashboard extends JFrame {
         JButton approveBtn = new JButton("Approve");
         JButton denyBtn = new JButton("Deny");
         JButton manageRoomsBtn = new JButton("Manage Rooms");
+        JButton createUserBtn = new JButton("Create User");
+        JButton manageUserBtn = new JButton("Manage User");
 
         // Style buttons
         Color btnColor = new Color(0, 123, 255);
         Color denyColor = new Color(220, 53, 69);
         Color greenColor = new Color(40, 167, 69);
+        Color blackColor = new Color(0, 0, 0);
+        Color violetColor = new Color(45, 14, 87);
 
         styleButton(approveBtn, greenColor);
         styleButton(denyBtn, denyColor);
         styleButton(manageRoomsBtn, btnColor);
+        styleButton(createUserBtn, blackColor);
+        styleButton(manageUserBtn, violetColor);
 
         approveBtn.addActionListener(e -> handleAction("approved"));
         denyBtn.addActionListener(e -> handleAction("denied"));
         manageRoomsBtn.addActionListener(e -> new RoomManagementWindow().setVisible(true));
+        createUserBtn.addActionListener(e -> new RegisterWindow().setVisible(true));
+        manageUserBtn.addActionListener(e -> new UserManagementWindow().setVisible(true));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(mainPanel.getBackground());
@@ -101,6 +109,8 @@ public class AdminDashboard extends JFrame {
         buttonPanel.add(approveBtn);
         buttonPanel.add(denyBtn);
         buttonPanel.add(manageRoomsBtn);
+        buttonPanel.add(createUserBtn);
+        buttonPanel.add(manageUserBtn);
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -118,14 +128,17 @@ public class AdminDashboard extends JFrame {
     private void loadPendingReservations() {
         tableModel.setRowCount(0);
         ReservationDAO dao = new ReservationDAO();
-        List<ReservationDTO> reservations = dao.getAllReservations();
-        for (ReservationDTO r : reservations) {
+        List<Reservation> reservations = dao.getAllReservations();
+        for (Reservation r : reservations) {
             tableModel.addRow(new Object[]{
                 r.getId(),
-               r.getFull_name(),
-                r.getRoom().getRoomNumber(),
-                r.getStartDate(),
+               r.getReserverName(),
+                r.getDepartment(),
+                r.getRoomType(),
+                r.getStartTime(),
                 r.getEndDate(),
+                r.getStartTime(),
+                r.getEndTime(),
                 r.getStatus()
             });
         }

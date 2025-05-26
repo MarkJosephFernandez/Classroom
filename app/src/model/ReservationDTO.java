@@ -12,6 +12,7 @@ import model.Reservation;
  */
 public class ReservationDTO extends Reservation {
     private String full_name;
+    private String departement;
 
     public String getFull_name() {
         return full_name;
@@ -19,6 +20,14 @@ public class ReservationDTO extends Reservation {
 
     public void setFull_name(String full_name) {
         this.full_name = full_name;
+    }
+
+    public void setDepartement(String departement) {
+        this.departement = departement;
+    }
+
+    public String getDepartement() {
+        return departement;
     }
     
     

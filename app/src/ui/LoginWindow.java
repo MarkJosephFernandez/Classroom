@@ -59,16 +59,7 @@ public class LoginWindow extends JFrame {
         loginButton.setPreferredSize(new Dimension(100, 30));
         loginButton.addActionListener(e -> loginUser());
 
-        JButton registerButton = new JButton("Register");
-        registerButton.setBackground(new Color(40, 167, 69));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFocusPainted(false);
-        registerButton.setFont(new Font("Arial", Font.BOLD, 12));
-        registerButton.setPreferredSize(new Dimension(100, 30));
-        registerButton.addActionListener(e -> new RegisterWindow().setVisible(true));
-
         buttonPanel.add(loginButton);
-        buttonPanel.add(registerButton);
 
         // Add all panels to main panel
         mainPanel.add(userPanel);

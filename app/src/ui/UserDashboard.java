@@ -29,7 +29,6 @@ public class UserDashboard extends JFrame {
 
     private JTextField nameField, departmentField;
 
-    
     public UserDashboard(User user) {
         this.user = user;
         setTitle("User Dashboard");
@@ -37,28 +36,33 @@ public class UserDashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // ==== Header Panel with Logout Button ====
+        // === Header Panel with Welcome and Side Buttons ===
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(mainPanel.getBackground());
 
         JLabel titleLabel = new JLabel("Welcome, " + user.getFullName(), SwingConstants.LEFT);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(new Color(33, 37, 41));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         headerPanel.add(titleLabel, BorderLayout.WEST);
 
+        // === Sidebar with Logout + Reserve ===
+        JPanel buttonSidebar = new JPanel();
+        buttonSidebar.setLayout(new BoxLayout(buttonSidebar, BoxLayout.Y_AXIS));
+        buttonSidebar.setBackground(mainPanel.getBackground());
+
         JButton logoutBtn = new JButton("Logout");
+        logoutBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
         logoutBtn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         logoutBtn.setBackground(new Color(220, 53, 69));
         logoutBtn.setForeground(Color.WHITE);
         logoutBtn.setFocusPainted(false);
         logoutBtn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         logoutBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Logout Confirmation", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -66,73 +70,88 @@ public class UserDashboard extends JFrame {
                 new LoginWindow().setVisible(true);
             }
         });
-         JTextField nameField = new JTextField(user.getFullName());
-      departmentBox = new JComboBox<>(new String[]{
-    "CCS", "CHM", "CBA", "CN", "CCRIM", "CAS"
-      });
-     departmentBox.setSelectedIndex(-1);
-        headerPanel.add(logoutBtn, BorderLayout.EAST);
+
+        JButton reserveBtn = new JButton("Reserve");
+        reserveBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        reserveBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        reserveBtn.setBackground(new Color(0, 123, 255));
+        reserveBtn.setForeground(Color.WHITE);
+        reserveBtn.setFocusPainted(false);
+        reserveBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        reserveBtn.addActionListener(e -> makeReservation());
+
+        buttonSidebar.add(logoutBtn);
+        buttonSidebar.add(Box.createVerticalStrut(10));
+        buttonSidebar.add(reserveBtn);
+
+        headerPanel.add(buttonSidebar, BorderLayout.EAST);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // ==== Top Booking Panel ====
-        JPanel topPanel = new JPanel(new GridLayout(2, 4, 10, 10));
+        // === Booking Form Panel ===
+        JPanel topPanel = new JPanel(new GridBagLayout());
         topPanel.setBackground(mainPanel.getBackground());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        nameField = new JTextField(user.getFullName());
-        departmentField = new JTextField(); // User can fill this in manually
+        nameField = new JTextField(user.getFullName(), 15);
+        departmentBox = new JComboBox<>(new String[]{"CCS", "CHM", "CBA", "CN", "CCRIM", "CAS"});
+        departmentBox.setSelectedIndex(-1);
 
         startDateChooser = new JDateChooser();
-        endDateChooser = new JDateChooser();
         startDateChooser.setDateFormatString("yyyy-MM-dd");
+        endDateChooser = new JDateChooser();
         endDateChooser.setDateFormatString("yyyy-MM-dd");
 
-        SpinnerDateModel startTimeModel = new SpinnerDateModel();
-        startTimeSpinner = new JSpinner(startTimeModel);
+        startTimeSpinner = new JSpinner(new SpinnerDateModel());
         startTimeSpinner.setEditor(new JSpinner.DateEditor(startTimeSpinner, "HH:mm"));
-
-        SpinnerDateModel endTimeModel = new SpinnerDateModel();
-        endTimeSpinner = new JSpinner(endTimeModel);
+        endTimeSpinner = new JSpinner(new SpinnerDateModel());
         endTimeSpinner.setEditor(new JSpinner.DateEditor(endTimeSpinner, "HH:mm"));
 
         roomBox = new JComboBox<>();
         loadAvailableRooms();
 
-        JButton reserveBtn = new JButton("Reserve");
-        reserveBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        reserveBtn.setBackground(new Color(0, 123, 255));
-        reserveBtn.setForeground(Color.WHITE);
-        reserveBtn.setFocusPainted(false);
-        reserveBtn.addActionListener(e -> makeReservation());
+        // Row 0
+        gbc.gridx = 0; gbc.gridy = 0;
+        topPanel.add(new JLabel("Full Name:"), gbc);
+        gbc.gridx = 1;
+        topPanel.add(nameField, gbc);
+        gbc.gridx = 2;
+        topPanel.add(new JLabel("Department:"), gbc);
+        gbc.gridx = 3;
+        topPanel.add(departmentBox, gbc);
 
-        topPanel.add(new JLabel("Full Name:"));
-        topPanel.add(nameField);
-        topPanel.add(new JLabel("Department:"));
-        topPanel.add(departmentBox);
+        // Row 1
+        gbc.gridx = 0; gbc.gridy = 1;
+        topPanel.add(new JLabel("Room Type:"), gbc);
+        gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
+        topPanel.add(roomBox, gbc);
+        gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE;
 
-        topPanel.add(new JLabel("Room Type:"));
-        topPanel.add(roomBox);
-        topPanel.add(new JLabel());
-        topPanel.add(new JLabel());
+        // Row 2
+        gbc.gridx = 0; gbc.gridy = 2;
+        topPanel.add(new JLabel("Start Date:"), gbc);
+        gbc.gridx = 1;
+        topPanel.add(startDateChooser, gbc);
+        gbc.gridx = 2;
+        topPanel.add(new JLabel("Start Time:"), gbc);
+        gbc.gridx = 3;
+        topPanel.add(startTimeSpinner, gbc);
 
-        topPanel.add(new JLabel("Start Date:"));
-        topPanel.add(startDateChooser);
-        topPanel.add(new JLabel("Start Time:"));
-        topPanel.add(startTimeSpinner);
-
-        topPanel.add(new JLabel("End Date:"));
-        topPanel.add(endDateChooser);
-        topPanel.add(new JLabel("End Time:"));
-        topPanel.add(endTimeSpinner);
+        // Row 3
+        gbc.gridx = 0; gbc.gridy = 3;
+        topPanel.add(new JLabel("End Date:"), gbc);
+        gbc.gridx = 1;
+        topPanel.add(endDateChooser, gbc);
+        gbc.gridx = 2;
+        topPanel.add(new JLabel("End Time:"), gbc);
+        gbc.gridx = 3;
+        topPanel.add(endTimeSpinner, gbc);
 
         mainPanel.add(topPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(mainPanel.getBackground());
-        buttonPanel.add(reserveBtn);
-        mainPanel.add(buttonPanel, BorderLayout.EAST);
-
-        // ==== Reservation History Table ====
-        String[] columns = {"Reservation ID","Name","Department", "Room", "Room Type", "Start Date", "End Date","Start Time","End Time", "Status"};
+        // === Reservation History Table ===
+        String[] columns = {"Reservation ID", "Name", "Department", "Room", "Room Type", "Start Date", "End Date", "Start Time", "End Time", "Status"};
         tableModel = new DefaultTableModel(columns, 0);
         JTable table = new JTable(tableModel);
         table.setRowHeight(25);
@@ -150,13 +169,14 @@ public class UserDashboard extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Reservation History"));
-        scrollPane.setPreferredSize(new Dimension(850, 200));
-
+        scrollPane.setPreferredSize(new Dimension(850, 180));
         mainPanel.add(scrollPane, BorderLayout.SOUTH);
 
         add(mainPanel);
         loadUserReservations();
     }
+
+
 
     private void loadAvailableRooms() {
         RoomDAO roomDAO = new RoomDAO();
@@ -180,34 +200,51 @@ public class UserDashboard extends JFrame {
             return;
         }
 
-        RoomComboItem selectedItem = (RoomComboItem) roomBox.getSelectedItem();
-        if (selectedItem == null) {
+        RoomComboItem selectedRoom = (RoomComboItem) roomBox.getSelectedItem();
+        if (selectedRoom == null) {
             JOptionPane.showMessageDialog(this, "Please select a room.");
             return;
         }
 
-        // Combine date + time
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime(start);
-        Calendar timeStart = Calendar.getInstance();
-        timeStart.setTime((java.util.Date) startTimeSpinner.getValue());
-        startCal.set(Calendar.HOUR_OF_DAY, timeStart.get(Calendar.HOUR_OF_DAY));
-        startCal.set(Calendar.MINUTE, timeStart.get(Calendar.MINUTE));
+        String reserverName = nameField.getText().trim();
+        if (reserverName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter your full name.");
+            return;
+        }
 
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime(end);
-        Calendar timeEnd = Calendar.getInstance();
-        timeEnd.setTime((java.util.Date) endTimeSpinner.getValue());
-        endCal.set(Calendar.HOUR_OF_DAY, timeEnd.get(Calendar.HOUR_OF_DAY));
-        endCal.set(Calendar.MINUTE, timeEnd.get(Calendar.MINUTE));
+        String department = (String) departmentBox.getSelectedItem();
+        if (department == null || department.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a department.");
+            return;
+        }
 
-        Date sqlStart = new Date(startCal.getTimeInMillis());
-        Date sqlEnd = new Date(endCal.getTimeInMillis());
+        String roomType = selectedRoom.getRoomType();
+        if (roomType == null || roomType.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Room type information missing.");
+            return;
+        }
 
-        int roomId = selectedItem.getId();
+        java.util.Date startTimeUtil = (java.util.Date) startTimeSpinner.getValue();
+        java.util.Date endTimeUtil = (java.util.Date) endTimeSpinner.getValue();
+
+        java.sql.Date sqlStartDate = new java.sql.Date(start.getTime());
+        java.sql.Date sqlEndDate = new java.sql.Date(end.getTime());
+        java.sql.Time sqlStartTime = new java.sql.Time(startTimeUtil.getTime());
+        java.sql.Time sqlEndTime = new java.sql.Time(endTimeUtil.getTime());
+
+        // Optional validation
+        if (sqlEndDate.equals(sqlStartDate) && sqlEndTime.before(sqlStartTime)) {
+            JOptionPane.showMessageDialog(this, "End time cannot be before start time on the same day.");
+            return;
+        }
+
+        int roomId = selectedRoom.getId();
 
         ReservationDAO dao = new ReservationDAO();
-        boolean success = dao.createReservation(user.getId(), roomId, sqlStart, sqlEnd);
+        boolean success = dao.createReservation(
+                user.getId(), reserverName, department, roomId,
+                sqlStartDate, sqlEndDate, sqlStartTime, sqlEndTime, roomType
+        );
 
         if (success) {
             JOptionPane.showMessageDialog(this, "Reservation request submitted.");
@@ -218,16 +255,27 @@ public class UserDashboard extends JFrame {
         }
     }
 
+
+
     private void loadUserReservations() {
         tableModel.setRowCount(0);
         ReservationDAO dao = new ReservationDAO();
         List<Reservation> reservations = dao.getUserReservations(user.getId());
+
         for (Reservation r : reservations) {
             tableModel.addRow(new Object[]{
-                r.getId(), r.getRoom().getRoomNumber(), r.getRoomType(),
-                r.getStartDate(), r.getEndDate(),
-                r.getStatus()
+                    r.getId(),
+                    r.getReserverName(),
+                    r.getDepartment(),
+                    r.getRoom().getRoomNumber(),
+                    r.getRoomType(),
+                    r.getStartDate(),
+                    r.getEndDate(),
+                    r.getStartTime(),
+                    r.getEndTime(),
+                    r.getStatus()
             });
         }
     }
+
 }

@@ -3,6 +3,8 @@ package dao;
 import model.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
     public boolean register(User user) {
@@ -54,5 +56,39 @@ public class UserDAO {
         e.printStackTrace();
     }
     return null;
-}
+    }
+    public List<User> getUsersWithRoleUser() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT user_id, full_name, username FROM user WHERE role = 'user'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("user_id"));
+                u.setFullName(rs.getString("full_name"));
+                u.setUsername(rs.getString("username"));
+                users.add(u);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM user WHERE user_id = ? AND role = 'user'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
