@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 25, 2025 at 04:07 PM
+-- Generation Time: May 26, 2025 at 05:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,12 +30,24 @@ SET time_zone = "+00:00";
 CREATE TABLE `reservation` (
   `reservation_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `reserver_name` varchar(100) DEFAULT NULL,
+  `department` varchar(20) DEFAULT NULL,
   `room_id` int(11) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL,
   `room_type` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`reservation_id`, `user_id`, `reserver_name`, `department`, `room_id`, `start_date`, `end_date`, `start_time`, `end_time`, `status`, `room_type`) VALUES
+(21, 2, 'Mark Joseph Ferandez', 'CCS', 14, '2025-05-27', '2025-05-28', '22:39:13', '23:39:00', 'denied', 'GREY AVR'),
+(22, 2, 'Mark Joseph Ferandez', 'CCS', 16, '2025-05-27', '2025-05-28', '23:13:55', '00:13:00', 'approved', 'BLUE AVR');
 
 -- --------------------------------------------------------
 
@@ -58,7 +70,7 @@ CREATE TABLE `room` (
 INSERT INTO `room` (`room_id`, `room_number`, `room_type_id`, `is_available`, `capacity`) VALUES
 (14, '1', 16, 1, 50),
 (15, '2', 17, 1, 50),
-(16, '3', 18, 1, 50),
+(16, '3', 18, 1, 51),
 (17, '4', 19, 1, 50);
 
 -- --------------------------------------------------------
@@ -145,7 +157,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `room`
@@ -163,7 +175,7 @@ ALTER TABLE `room_type`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
